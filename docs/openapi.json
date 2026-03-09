@@ -63,7 +63,7 @@
       },
       "ProcessingItem": {
         "type": "object",
-        "required": ["id", "title", "artist", "type", "quality", "status", "url", "loading", "error"],
+        "required": ["id", "title", "artist", "type", "quality", "status", "loading", "error"],
         "properties": {
           "id": {
             "type": "string",
@@ -79,7 +79,7 @@
           },
           "url": {
             "type": "string",
-            "description": "Full Tidal URL (e.g. https://listen.tidal.com/album/123456) or content path. Required for most types, optional for favorite_* types"
+            "description": "Full Tidal URL (e.g. https://listen.tidal.com/album/123456) or content path. Optional for favorite_* types"
           },
           "type": {
             "$ref": "#/components/schemas/ContentType"
@@ -158,15 +158,10 @@
           }
         }
       },
-      "HistoryItem": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string" },
-          "type": { "$ref": "#/components/schemas/ContentType" },
-          "url": { "type": "string" },
-          "title": { "type": "string" },
-          "downloadedAt": { "type": "integer", "description": "Unix timestamp" }
-        }
+      "HistoryList": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Array of Tidal content IDs that have been downloaded"
       },
       "AuthSuccessResponse": {
         "type": "object",
@@ -569,7 +564,7 @@
                   }
                 },
                 "favorite_albums": {
-                  "summary": "Download all favorite albums",
+                  "summary": "Download all favorite albums (url is optional for favorites)",
                   "value": {
                     "item": {
                       "id": "favorite_albums",
@@ -651,8 +646,8 @@
     "/api/remove-finished": {
       "delete": {
         "operationId": "removeFinishedFromQueue",
-        "summary": "Remove finished items from queue",
-        "description": "Remove all items with 'finished' status from the download queue.",
+        "summary": "Remove finished and errored items from queue",
+        "description": "Remove all items with 'finished' or 'error' status from the download queue.",
         "responses": {
           "204": { "description": "Finished items removed" }
         }
@@ -746,13 +741,10 @@
         "description": "Returns the download history. Requires ENABLE_HISTORY=true in Docker configuration.",
         "responses": {
           "200": {
-            "description": "History list",
+            "description": "History list (array of Tidal content ID strings)",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/HistoryItem" }
-                }
+                "schema": { "$ref": "#/components/schemas/HistoryList" }
               }
             }
           }
@@ -1035,7 +1027,8 @@
       "get": {
         "operationId": "signStreamUrl",
         "summary": "Generate signed streaming URL",
-        "description": "Generates a time-limited (5 minutes) signed URL for audio streaming of a Tidal track.",
+        "description": "Generates a time-limited (5 minutes) signed URL for audio streaming of a Tidal track. This endpoint does NOT require authentication.",
+        "security": [],
         "parameters": [
           {
             "name": "id",
@@ -1064,7 +1057,8 @@
       "get": {
         "operationId": "playStream",
         "summary": "Play audio stream",
-        "description": "Streams audio content with signature validation. Supports HTTP range requests for seeking. Use the signed URL from /api/stream/sign/:id.",
+        "description": "Streams audio content with signature validation. Supports HTTP range requests for seeking. Use the signed URL from /api/stream/sign/:id. This endpoint does NOT require authentication (uses URL signature instead).",
+        "security": [],
         "parameters": [
           {
             "name": "id",
@@ -1097,8 +1091,29 @@
               }
             }
           },
+          "400": {
+            "description": "No Tidal token available",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
           "403": {
-            "description": "Missing signature, expired URL, or invalid signature"
+            "description": "Missing signature, expired URL, or invalid signature",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "502": {
+            "description": "No playable quality available from Tidal",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
           }
         }
       }
