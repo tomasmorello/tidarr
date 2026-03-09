@@ -198,6 +198,7 @@
             "type": "object",
             "properties": {
               "ENABLE_BEETS": { "type": "string" },
+              "REPLAY_GAIN": { "type": "string" },
               "PLEX_URL": { "type": "string" },
               "PLEX_PUBLIC_URL": { "type": "string" },
               "PLEX_LIBRARY": { "type": "string" },
@@ -205,12 +206,17 @@
               "PLEX_PATH": { "type": "string" },
               "JELLYFIN_URL": { "type": "string" },
               "JELLYFIN_PUBLIC_URL": { "type": "string" },
+              "JELLYFIN_API_KEY": { "type": "string" },
               "NAVIDROME_URL": { "type": "string" },
               "NAVIDROME_PUBLIC_URL": { "type": "string" },
               "NAVIDROME_USER": { "type": "string" },
               "NAVIDROME_PASSWORD": { "type": "string" },
               "GOTIFY_URL": { "type": "string" },
               "GOTIFY_TOKEN": { "type": "string" },
+              "NTFY_URL": { "type": "string" },
+              "NTFY_TOPIC": { "type": "string" },
+              "NTFY_TOKEN": { "type": "string" },
+              "NTFY_PRIORITY": { "type": "string" },
               "PUID": { "type": "string" },
               "PGID": { "type": "string" },
               "UMASK": { "type": "string" },
@@ -220,7 +226,10 @@
               "PUSH_OVER_URL": { "type": "string" },
               "LOCK_QUALITY": { "type": "string" },
               "SYNC_CRON_EXPRESSION": { "type": "string" },
-              "ENABLE_HISTORY": { "type": "string" }
+              "NO_DOWNLOAD": { "type": "string" },
+              "ENABLE_HISTORY": { "type": "string" },
+              "M3U_BASEPATH_FILE": { "type": "string" },
+              "PLAYLIST_ALBUMS": { "type": "string" }
             }
           },
           "noToken": { "type": "boolean", "description": "True if no Tidal token is configured" },
@@ -294,21 +303,75 @@
           }
         }
       },
+      "SabnzbdGetConfigResponse": {
+        "type": "object",
+        "properties": {
+          "config": {
+            "type": "object",
+            "properties": {
+              "version": { "type": "string" },
+              "categories": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "priority": { "type": "integer" },
+                    "pp": { "type": "string" },
+                    "script": { "type": "string" },
+                    "dir": { "type": "string" }
+                  }
+                }
+              },
+              "misc": {
+                "type": "object",
+                "properties": {
+                  "complete_dir": { "type": "string" },
+                  "download_dir": { "type": "string" },
+                  "api_key": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      },
       "SabnzbdQueueResponse": {
         "type": "object",
         "properties": {
           "queue": {
             "type": "object",
             "properties": {
-              "status": { "type": "string" },
+              "status": { "type": "string", "enum": ["Downloading", "Idle", "Paused"] },
+              "paused": { "type": "boolean" },
+              "pause_int": { "type": "string" },
+              "speedlimit": { "type": "string" },
+              "speedlimit_abs": { "type": "string" },
+              "noofslots": { "type": "integer" },
+              "limit": { "type": "integer" },
+              "start": { "type": "integer" },
+              "finish": { "type": "integer" },
               "slots": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "nzo_id": { "type": "string" },
+                    "status": { "type": "string", "enum": ["Downloading", "Queued", "Paused"] },
+                    "index": { "type": "integer" },
+                    "eta": { "type": "string" },
+                    "timeleft": { "type": "string" },
+                    "avg_age": { "type": "string" },
+                    "mb": { "type": "string" },
+                    "mbleft": { "type": "string" },
+                    "mbmissing": { "type": "string" },
+                    "size": { "type": "string" },
+                    "sizeleft": { "type": "string" },
                     "filename": { "type": "string" },
-                    "status": { "type": "string", "enum": ["Downloading", "Queued", "Paused"] }
+                    "priority": { "type": "string" },
+                    "cat": { "type": "string" },
+                    "percentage": { "type": "string" },
+                    "nzo_id": { "type": "string" },
+                    "unpackopts": { "type": "string" },
+                    "labels": { "type": "array", "items": { "type": "string" } }
                   }
                 }
               }
@@ -322,15 +385,33 @@
           "history": {
             "type": "object",
             "properties": {
+              "noofslots": { "type": "integer" },
+              "month_size": { "type": "string" },
+              "week_size": { "type": "string" },
+              "day_size": { "type": "string" },
+              "total_size": { "type": "string" },
               "slots": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "nzo_id": { "type": "string" },
-                    "name": { "type": "string" },
                     "status": { "type": "string", "enum": ["Completed", "Failed"] },
-                    "storage": { "type": "string" }
+                    "name": { "type": "string" },
+                    "nzo_id": { "type": "string" },
+                    "category": { "type": "string" },
+                    "size": { "type": "string" },
+                    "bytes": { "type": "string" },
+                    "fail_message": { "type": "string" },
+                    "download_time": { "type": "integer" },
+                    "downloaded": { "type": "integer" },
+                    "completeness": { "type": "integer" },
+                    "script": { "type": "string" },
+                    "script_log": { "type": "string" },
+                    "script_line": { "type": "string" },
+                    "download_name": { "type": "string" },
+                    "path": { "type": "string" },
+                    "storage": { "type": "string" },
+                    "status_string": { "type": "string" }
                   }
                 }
               }
@@ -657,7 +738,7 @@
       "post": {
         "operationId": "pauseQueue",
         "summary": "Pause the download queue",
-        "description": "Stops processing new items. Cancels the current download and resets it to 'queue' status. Cleans up incomplete downloads.",
+        "description": "Stops processing new items. Cancels the current download and resets it to 'queue_download' status. Cleans up incomplete downloads.",
         "responses": {
           "204": { "description": "Queue paused" }
         }
@@ -1221,7 +1302,7 @@
       "get": {
         "operationId": "lidarrDownload",
         "summary": "Download album via Lidarr",
-        "description": "Called by Lidarr when grabbing an album. Returns an NZB file that triggers the download.",
+        "description": "Called by Lidarr when grabbing an album. Returns an NZB file that triggers the download. Quality values come from the indexer search results.",
         "parameters": [
           {
             "name": "id",
@@ -1236,9 +1317,9 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["max", "high", "normal", "low"]
+              "enum": ["hires_lossless", "lossless", "high", "low"]
             },
-            "description": "Download quality"
+            "description": "Download quality as returned by the indexer"
           }
         ],
         "responses": {
@@ -1296,6 +1377,7 @@
                 "schema": {
                   "oneOf": [
                     { "$ref": "#/components/schemas/SabnzbdVersionResponse" },
+                    { "$ref": "#/components/schemas/SabnzbdGetConfigResponse" },
                     { "$ref": "#/components/schemas/SabnzbdAddResponse" },
                     { "$ref": "#/components/schemas/SabnzbdQueueResponse" },
                     { "$ref": "#/components/schemas/SabnzbdHistoryResponse" }
@@ -1309,7 +1391,7 @@
       "post": {
         "operationId": "sabnzbdApiPost",
         "summary": "SABnzbd-compatible download client API (POST)",
-        "description": "Used by Lidarr to upload NZB files (mode=addfile). Accepts multipart/form-data with the NZB file.",
+        "description": "Supports all SABnzbd modes via POST. Primarily used by Lidarr to upload NZB files (mode=addfile) with multipart/form-data.",
         "parameters": [
           {
             "name": "mode",
@@ -1317,7 +1399,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["addfile"]
+              "enum": ["version", "get_config", "addurl", "addfile", "queue", "history"]
             }
           }
         ],
