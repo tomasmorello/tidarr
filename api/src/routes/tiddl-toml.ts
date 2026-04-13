@@ -12,8 +12,44 @@ import { TiddlTomlResponse, TiddlTomlSaveResponse } from "../types";
 const router = Router();
 
 /**
- * GET /api/tiddl/config
- * Get tiddl config file content
+ * @openapi
+ * /api/tiddl/config:
+ *   get:
+ *     operationId: getTiddlConfig
+ *     summary: Get Tiddl TOML configuration
+ *     description: Returns the raw TOML content of the tiddl configuration file (config.toml).
+ *     responses:
+ *       200:
+ *         description: Tiddl config
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TiddlTomlResponse'
+ *   post:
+ *     operationId: saveTiddlConfig
+ *     summary: Save Tiddl TOML configuration
+ *     description: Save the tiddl TOML configuration file content. This overwrites the entire config.toml file.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - toml
+ *             properties:
+ *               toml:
+ *                 type: string
+ *                 description: Raw TOML content to save
+ *     responses:
+ *       200:
+ *         description: Config saved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SaveSuccessResponse'
+ *       400:
+ *         description: TOML content must be a string
  */
 router.get(
   "/tiddl/config",
@@ -28,10 +64,6 @@ router.get(
   },
 );
 
-/**
- * POST /api/tiddl/config
- * Save tiddl config file content
- */
 router.post(
   "/tiddl/config",
   ensureAccessIsGranted,

@@ -13,8 +13,44 @@ import { getCustomCSS, setCustomCSS } from "../services/custom-css";
 const router = Router();
 
 /**
- * GET /api/custom-css
- * Get custom CSS content
+ * @openapi
+ * /api/custom-css:
+ *   get:
+ *     operationId: getCustomCss
+ *     summary: Get custom CSS
+ *     description: Returns the custom CSS content used to style the Tidarr web UI.
+ *     responses:
+ *       200:
+ *         description: Custom CSS content
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CustomCSSResponse'
+ *   post:
+ *     operationId: saveCustomCss
+ *     summary: Save custom CSS
+ *     description: Save custom CSS content to style the Tidarr web UI.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - css
+ *             properties:
+ *               css:
+ *                 type: string
+ *                 description: CSS content
+ *     responses:
+ *       200:
+ *         description: CSS saved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SaveSuccessResponse'
+ *       400:
+ *         description: CSS content must be a string
  */
 router.get(
   "/custom-css",
@@ -29,10 +65,6 @@ router.get(
   },
 );
 
-/**
- * POST /api/custom-css
- * Save custom CSS content
- */
 router.post(
   "/custom-css",
   ensureAccessIsGranted,

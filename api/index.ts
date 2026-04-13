@@ -33,6 +33,7 @@ import { loadHistoryFromFile } from "./src/services/history";
 import { createSyncCronJob } from "./src/services/sync";
 
 import customCssRouter from "./src/routes/custom-css";
+import { openapiSpec } from "./src/openapi";
 
 dotenv.config({
   path: path.join(__dirname, "../.env"),
@@ -90,6 +91,9 @@ app.use("/api", historyRouter);
 app.use("/api", playRouter);
 app.use("/api", apiKeyRouter);
 app.use("/api", lidarrRouter);
+
+// OpenAPI spec endpoint
+app.get("/api/openapi.json", (_req, res) => res.json(openapiSpec));
 
 // Run
 

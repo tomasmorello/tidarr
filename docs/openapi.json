@@ -1,5 +1,5 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.3",
   "info": {
     "title": "Tidarr API",
     "description": "Tidarr REST API for managing Tidal music downloads, queue management, synchronization, and Lidarr integration.",
@@ -12,9 +12,15 @@
     }
   ],
   "security": [
-    { "ApiKeyHeader": [] },
-    { "ApiKeyQuery": [] },
-    { "BearerToken": [] }
+    {
+      "ApiKeyHeader": []
+    },
+    {
+      "ApiKeyQuery": []
+    },
+    {
+      "BearerToken": []
+    }
   ],
   "components": {
     "securitySchemes": {
@@ -58,12 +64,26 @@
       },
       "QualityType": {
         "type": "string",
-        "enum": ["low", "normal", "high", "max"],
+        "enum": [
+          "low",
+          "normal",
+          "high",
+          "max"
+        ],
         "description": "Download quality. low=AAC-96, normal=AAC-320, high=16-bit FLAC, max=24-bit FLAC"
       },
       "ProcessingItem": {
         "type": "object",
-        "required": ["id", "title", "artist", "type", "quality", "status", "loading", "error"],
+        "required": [
+          "id",
+          "title",
+          "artist",
+          "type",
+          "quality",
+          "status",
+          "loading",
+          "error"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -89,7 +109,15 @@
           },
           "status": {
             "type": "string",
-            "enum": ["queue_download", "download", "queue_processing", "processing", "queue", "finished", "error"],
+            "enum": [
+              "queue_download",
+              "download",
+              "queue_processing",
+              "processing",
+              "queue",
+              "finished",
+              "error"
+            ],
             "description": "Item status. Use 'queue_download' when adding new items. 'queue' is legacy"
           },
           "loading": {
@@ -105,30 +133,68 @@
       "ProcessingItemResponse": {
         "type": "object",
         "properties": {
-          "id": { "type": "string" },
-          "title": { "type": "string" },
-          "artist": { "type": "string" },
-          "url": { "type": "string" },
-          "type": { "$ref": "#/components/schemas/ContentType" },
-          "quality": { "$ref": "#/components/schemas/QualityType" },
-          "status": { "type": "string" },
-          "loading": { "type": "boolean" },
-          "error": { "type": "boolean" },
-          "retryCount": { "type": "integer" },
-          "networkError": { "type": "boolean" },
-          "source": { "type": "string", "enum": ["lidarr", "tidarr"] },
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "artist": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ContentType"
+          },
+          "quality": {
+            "$ref": "#/components/schemas/QualityType"
+          },
+          "status": {
+            "type": "string"
+          },
+          "loading": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "boolean"
+          },
+          "retryCount": {
+            "type": "integer"
+          },
+          "networkError": {
+            "type": "boolean"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "lidarr",
+              "tidarr"
+            ]
+          },
           "progress": {
             "type": "object",
             "properties": {
-              "current": { "type": "integer" },
-              "total": { "type": "integer" }
+              "current": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              }
             }
           }
         }
       },
       "SyncItem": {
         "type": "object",
-        "required": ["id", "title", "url", "type", "quality"],
+        "required": [
+          "id",
+          "title",
+          "url",
+          "type",
+          "quality"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -160,149 +226,290 @@
       },
       "HistoryList": {
         "type": "array",
-        "items": { "type": "string" },
+        "items": {
+          "type": "string"
+        },
         "description": "Array of Tidal content IDs that have been downloaded"
       },
       "AuthSuccessResponse": {
         "type": "object",
+        "required": [
+          "accessGranted",
+          "token"
+        ],
         "properties": {
-          "accessGranted": { "type": "boolean", "const": true },
-          "token": { "type": "string", "description": "JWT token valid for 12 hours" }
-        },
-        "required": ["accessGranted", "token"]
+          "accessGranted": {
+            "type": "boolean"
+          },
+          "token": {
+            "type": "string",
+            "description": "JWT token valid for 12 hours"
+          }
+        }
       },
       "AuthErrorResponse": {
         "type": "object",
+        "required": [
+          "error",
+          "message"
+        ],
         "properties": {
-          "error": { "type": "boolean", "const": true },
-          "message": { "type": "string" }
-        },
-        "required": ["error", "message"]
+          "error": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
       },
       "IsAuthActiveResponse": {
         "type": "object",
+        "required": [
+          "isAuthActive",
+          "authType"
+        ],
         "properties": {
-          "isAuthActive": { "type": "boolean" },
+          "isAuthActive": {
+            "type": "boolean"
+          },
           "authType": {
-            "type": ["string", "null"],
-            "enum": ["password", "oidc", null]
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "password",
+              "oidc"
+            ]
           }
-        },
-        "required": ["isAuthActive", "authType"]
+        }
       },
       "SettingsResponse": {
         "type": "object",
         "properties": {
-          "output": { "type": "string" },
+          "output": {
+            "type": "string"
+          },
           "parameters": {
             "type": "object",
             "properties": {
-              "ENABLE_BEETS": { "type": "string" },
-              "REPLAY_GAIN": { "type": "string" },
-              "PLEX_URL": { "type": "string" },
-              "PLEX_PUBLIC_URL": { "type": "string" },
-              "PLEX_LIBRARY": { "type": "string" },
-              "PLEX_TOKEN": { "type": "string" },
-              "PLEX_PATH": { "type": "string" },
-              "JELLYFIN_URL": { "type": "string" },
-              "JELLYFIN_PUBLIC_URL": { "type": "string" },
-              "JELLYFIN_API_KEY": { "type": "string" },
-              "NAVIDROME_URL": { "type": "string" },
-              "NAVIDROME_PUBLIC_URL": { "type": "string" },
-              "NAVIDROME_USER": { "type": "string" },
-              "NAVIDROME_PASSWORD": { "type": "string" },
-              "GOTIFY_URL": { "type": "string" },
-              "GOTIFY_TOKEN": { "type": "string" },
-              "NTFY_URL": { "type": "string" },
-              "NTFY_TOPIC": { "type": "string" },
-              "NTFY_TOKEN": { "type": "string" },
-              "NTFY_PRIORITY": { "type": "string" },
-              "PUID": { "type": "string" },
-              "PGID": { "type": "string" },
-              "UMASK": { "type": "string" },
-              "TIDARR_VERSION": { "type": "string" },
-              "APPRISE_API_ENDPOINT": { "type": "string" },
-              "APPRISE_API_TAG": { "type": "string" },
-              "PUSH_OVER_URL": { "type": "string" },
-              "LOCK_QUALITY": { "type": "string" },
-              "SYNC_CRON_EXPRESSION": { "type": "string" },
-              "NO_DOWNLOAD": { "type": "string" },
-              "ENABLE_HISTORY": { "type": "string" },
-              "M3U_BASEPATH_FILE": { "type": "string" },
-              "PLAYLIST_ALBUMS": { "type": "string" },
-              "ARTIST_SINGLE_DOWNLOAD": { "type": "string" },
-              "DOWNLOAD_BATCH_SIZE": { "type": "string" },
-              "DOWNLOAD_BATCH_CRON": { "type": "string" }
+              "ENABLE_BEETS": {
+                "type": "string"
+              },
+              "REPLAY_GAIN": {
+                "type": "string"
+              },
+              "PLEX_URL": {
+                "type": "string"
+              },
+              "PLEX_PUBLIC_URL": {
+                "type": "string"
+              },
+              "PLEX_LIBRARY": {
+                "type": "string"
+              },
+              "PLEX_TOKEN": {
+                "type": "string"
+              },
+              "PLEX_PATH": {
+                "type": "string"
+              },
+              "JELLYFIN_URL": {
+                "type": "string"
+              },
+              "JELLYFIN_PUBLIC_URL": {
+                "type": "string"
+              },
+              "JELLYFIN_API_KEY": {
+                "type": "string"
+              },
+              "NAVIDROME_URL": {
+                "type": "string"
+              },
+              "NAVIDROME_PUBLIC_URL": {
+                "type": "string"
+              },
+              "NAVIDROME_USER": {
+                "type": "string"
+              },
+              "NAVIDROME_PASSWORD": {
+                "type": "string"
+              },
+              "GOTIFY_URL": {
+                "type": "string"
+              },
+              "GOTIFY_TOKEN": {
+                "type": "string"
+              },
+              "NTFY_URL": {
+                "type": "string"
+              },
+              "NTFY_TOPIC": {
+                "type": "string"
+              },
+              "NTFY_TOKEN": {
+                "type": "string"
+              },
+              "NTFY_PRIORITY": {
+                "type": "string"
+              },
+              "PUID": {
+                "type": "string"
+              },
+              "PGID": {
+                "type": "string"
+              },
+              "UMASK": {
+                "type": "string"
+              },
+              "TIDARR_VERSION": {
+                "type": "string"
+              },
+              "APPRISE_API_ENDPOINT": {
+                "type": "string"
+              },
+              "APPRISE_API_TAG": {
+                "type": "string"
+              },
+              "PUSH_OVER_URL": {
+                "type": "string"
+              },
+              "LOCK_QUALITY": {
+                "type": "string"
+              },
+              "SYNC_CRON_EXPRESSION": {
+                "type": "string"
+              },
+              "NO_DOWNLOAD": {
+                "type": "string"
+              },
+              "ENABLE_HISTORY": {
+                "type": "string"
+              },
+              "M3U_BASEPATH_FILE": {
+                "type": "string"
+              },
+              "PLAYLIST_ALBUMS": {
+                "type": "string"
+              },
+              "ARTIST_SINGLE_DOWNLOAD": {
+                "type": "string"
+              },
+              "DOWNLOAD_BATCH_SIZE": {
+                "type": "string"
+              },
+              "DOWNLOAD_BATCH_CRON": {
+                "type": "string"
+              }
             }
           },
-          "noToken": { "type": "boolean", "description": "True if no Tidal token is configured" },
+          "noToken": {
+            "type": "boolean",
+            "description": "True if no Tidal token is configured"
+          },
           "tiddl_config": {
             "type": "object",
             "description": "Tiddl configuration including auth tokens, download settings, templates, etc."
           },
           "configErrors": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "Configuration errors, if any"
           }
         }
       },
       "QueueStatusResponse": {
         "type": "object",
+        "required": [
+          "isPaused"
+        ],
         "properties": {
-          "isPaused": { "type": "boolean" }
-        },
-        "required": ["isPaused"]
+          "isPaused": {
+            "type": "boolean"
+          }
+        }
       },
       "CustomCSSResponse": {
         "type": "object",
+        "required": [
+          "css"
+        ],
         "properties": {
-          "css": { "type": "string" }
-        },
-        "required": ["css"]
+          "css": {
+            "type": "string"
+          }
+        }
       },
       "SaveSuccessResponse": {
         "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
         "properties": {
-          "success": { "type": "boolean" },
-          "message": { "type": "string" }
-        },
-        "required": ["success", "message"]
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
       },
       "TiddlTomlResponse": {
         "type": "object",
+        "required": [
+          "toml"
+        ],
         "properties": {
-          "toml": { "type": "string", "description": "Raw TOML content of the tiddl configuration file" }
-        },
-        "required": ["toml"]
+          "toml": {
+            "type": "string",
+            "description": "Raw TOML content of the tiddl configuration file"
+          }
+        }
       },
       "ApiKeyResponse": {
         "type": "object",
+        "required": [
+          "apiKey"
+        ],
         "properties": {
-          "apiKey": { "type": "string", "description": "64-character API key" }
-        },
-        "required": ["apiKey"]
+          "apiKey": {
+            "type": "string",
+            "description": "64-character API key"
+          }
+        }
       },
       "SignedUrlResponse": {
         "type": "object",
+        "required": [
+          "url"
+        ],
         "properties": {
-          "url": { "type": "string", "description": "Signed URL path with expiration and signature parameters" }
-        },
-        "required": ["url"]
+          "url": {
+            "type": "string",
+            "description": "Signed URL path with expiration and signature parameters"
+          }
+        }
       },
       "SabnzbdVersionResponse": {
         "type": "object",
         "properties": {
-          "version": { "type": "string" }
+          "version": {
+            "type": "string"
+          }
         }
       },
       "SabnzbdAddResponse": {
         "type": "object",
         "properties": {
-          "status": { "type": "boolean" },
+          "status": {
+            "type": "boolean"
+          },
           "nzo_ids": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -312,26 +519,44 @@
           "config": {
             "type": "object",
             "properties": {
-              "version": { "type": "string" },
+              "version": {
+                "type": "string"
+              },
               "categories": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "name": { "type": "string" },
-                    "priority": { "type": "integer" },
-                    "pp": { "type": "string" },
-                    "script": { "type": "string" },
-                    "dir": { "type": "string" }
+                    "name": {
+                      "type": "string"
+                    },
+                    "priority": {
+                      "type": "integer"
+                    },
+                    "pp": {
+                      "type": "string"
+                    },
+                    "script": {
+                      "type": "string"
+                    },
+                    "dir": {
+                      "type": "string"
+                    }
                   }
                 }
               },
               "misc": {
                 "type": "object",
                 "properties": {
-                  "complete_dir": { "type": "string" },
-                  "download_dir": { "type": "string" },
-                  "api_key": { "type": "string" }
+                  "complete_dir": {
+                    "type": "string"
+                  },
+                  "download_dir": {
+                    "type": "string"
+                  },
+                  "api_key": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -344,37 +569,102 @@
           "queue": {
             "type": "object",
             "properties": {
-              "status": { "type": "string", "enum": ["Downloading", "Idle", "Paused"] },
-              "paused": { "type": "boolean" },
-              "pause_int": { "type": "string" },
-              "speedlimit": { "type": "string" },
-              "speedlimit_abs": { "type": "string" },
-              "noofslots": { "type": "integer" },
-              "limit": { "type": "integer" },
-              "start": { "type": "integer" },
-              "finish": { "type": "integer" },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "Downloading",
+                  "Idle",
+                  "Paused"
+                ]
+              },
+              "paused": {
+                "type": "boolean"
+              },
+              "pause_int": {
+                "type": "string"
+              },
+              "speedlimit": {
+                "type": "string"
+              },
+              "speedlimit_abs": {
+                "type": "string"
+              },
+              "noofslots": {
+                "type": "integer"
+              },
+              "limit": {
+                "type": "integer"
+              },
+              "start": {
+                "type": "integer"
+              },
+              "finish": {
+                "type": "integer"
+              },
               "slots": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "status": { "type": "string", "enum": ["Downloading", "Queued", "Paused"] },
-                    "index": { "type": "integer" },
-                    "eta": { "type": "string" },
-                    "timeleft": { "type": "string" },
-                    "avg_age": { "type": "string" },
-                    "mb": { "type": "string" },
-                    "mbleft": { "type": "string" },
-                    "mbmissing": { "type": "string" },
-                    "size": { "type": "string" },
-                    "sizeleft": { "type": "string" },
-                    "filename": { "type": "string" },
-                    "priority": { "type": "string" },
-                    "cat": { "type": "string" },
-                    "percentage": { "type": "string" },
-                    "nzo_id": { "type": "string" },
-                    "unpackopts": { "type": "string" },
-                    "labels": { "type": "array", "items": { "type": "string" } }
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "Downloading",
+                        "Queued",
+                        "Paused"
+                      ]
+                    },
+                    "index": {
+                      "type": "integer"
+                    },
+                    "eta": {
+                      "type": "string"
+                    },
+                    "timeleft": {
+                      "type": "string"
+                    },
+                    "avg_age": {
+                      "type": "string"
+                    },
+                    "mb": {
+                      "type": "string"
+                    },
+                    "mbleft": {
+                      "type": "string"
+                    },
+                    "mbmissing": {
+                      "type": "string"
+                    },
+                    "size": {
+                      "type": "string"
+                    },
+                    "sizeleft": {
+                      "type": "string"
+                    },
+                    "filename": {
+                      "type": "string"
+                    },
+                    "priority": {
+                      "type": "string"
+                    },
+                    "cat": {
+                      "type": "string"
+                    },
+                    "percentage": {
+                      "type": "string"
+                    },
+                    "nzo_id": {
+                      "type": "string"
+                    },
+                    "unpackopts": {
+                      "type": "string"
+                    },
+                    "labels": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               }
@@ -388,33 +678,81 @@
           "history": {
             "type": "object",
             "properties": {
-              "noofslots": { "type": "integer" },
-              "month_size": { "type": "string" },
-              "week_size": { "type": "string" },
-              "day_size": { "type": "string" },
-              "total_size": { "type": "string" },
+              "noofslots": {
+                "type": "integer"
+              },
+              "month_size": {
+                "type": "string"
+              },
+              "week_size": {
+                "type": "string"
+              },
+              "day_size": {
+                "type": "string"
+              },
+              "total_size": {
+                "type": "string"
+              },
               "slots": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "status": { "type": "string", "enum": ["Completed", "Failed"] },
-                    "name": { "type": "string" },
-                    "nzo_id": { "type": "string" },
-                    "category": { "type": "string" },
-                    "size": { "type": "string" },
-                    "bytes": { "type": "string" },
-                    "fail_message": { "type": "string" },
-                    "download_time": { "type": "integer" },
-                    "downloaded": { "type": "integer" },
-                    "completeness": { "type": "integer" },
-                    "script": { "type": "string" },
-                    "script_log": { "type": "string" },
-                    "script_line": { "type": "string" },
-                    "download_name": { "type": "string" },
-                    "path": { "type": "string" },
-                    "storage": { "type": "string" },
-                    "status_string": { "type": "string" }
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "Completed",
+                        "Failed"
+                      ]
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "nzo_id": {
+                      "type": "string"
+                    },
+                    "category": {
+                      "type": "string"
+                    },
+                    "size": {
+                      "type": "string"
+                    },
+                    "bytes": {
+                      "type": "string"
+                    },
+                    "fail_message": {
+                      "type": "string"
+                    },
+                    "download_time": {
+                      "type": "integer"
+                    },
+                    "downloaded": {
+                      "type": "integer"
+                    },
+                    "completeness": {
+                      "type": "integer"
+                    },
+                    "script": {
+                      "type": "string"
+                    },
+                    "script_log": {
+                      "type": "string"
+                    },
+                    "script_line": {
+                      "type": "string"
+                    },
+                    "download_name": {
+                      "type": "string"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "storage": {
+                      "type": "string"
+                    },
+                    "status_string": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -425,12 +763,52 @@
       "ErrorResponse": {
         "type": "object",
         "properties": {
-          "error": { "type": "string" }
+          "error": {
+            "type": "string"
+          }
         }
       }
     }
   },
   "paths": {
+    "/api/api-key": {
+      "get": {
+        "operationId": "getApiKey",
+        "summary": "Get current API key",
+        "description": "Returns the current API key used for *arr integrations. Requires JWT authentication.",
+        "responses": {
+          "200": {
+            "description": "API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiKeyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/api-key/regenerate": {
+      "post": {
+        "operationId": "regenerateApiKey",
+        "summary": "Regenerate API key",
+        "description": "Generate a new random 64-character API key. Warning - this invalidates the current key.",
+        "responses": {
+          "200": {
+            "description": "New API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiKeyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth": {
       "post": {
         "operationId": "authenticate",
@@ -443,7 +821,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["password"],
+                "required": [
+                  "password"
+                ],
                 "properties": {
                   "password": {
                     "type": "string",
@@ -459,7 +839,9 @@
             "description": "Authentication successful",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthSuccessResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSuccessResponse"
+                }
               }
             }
           },
@@ -467,7 +849,9 @@
             "description": "Authentication failed",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorResponse"
+                }
               }
             }
           }
@@ -485,7 +869,380 @@
             "description": "Auth status",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/IsAuthActiveResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/IsAuthActiveResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/settings": {
+      "get": {
+        "operationId": "getSettings",
+        "summary": "Get Tidarr configuration",
+        "description": "Returns the full Tidarr configuration including Tidal token status, download quality, integration settings, and tiddl config.",
+        "responses": {
+          "200": {
+            "description": "Settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/run-token": {
+      "get": {
+        "operationId": "runTidalToken",
+        "summary": "Run Tidal authentication flow",
+        "description": "Server-Sent Events endpoint that runs the Tidal OAuth flow. Streams progress updates.",
+        "responses": {
+          "200": {
+            "description": "SSE stream with Tidal authentication progress",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/token": {
+      "delete": {
+        "operationId": "deleteTidalToken",
+        "summary": "Delete Tidal authentication token",
+        "description": "Removes the Tidal authentication token from the tiddl configuration.",
+        "responses": {
+          "204": {
+            "description": "Token deleted"
+          }
+        }
+      }
+    },
+    "/api/custom-css": {
+      "get": {
+        "operationId": "getCustomCss",
+        "summary": "Get custom CSS",
+        "description": "Returns the custom CSS content used to style the Tidarr web UI.",
+        "responses": {
+          "200": {
+            "description": "Custom CSS content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomCSSResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "saveCustomCss",
+        "summary": "Save custom CSS",
+        "description": "Save custom CSS content to style the Tidarr web UI.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "css"
+                ],
+                "properties": {
+                  "css": {
+                    "type": "string",
+                    "description": "CSS content"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "CSS saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveSuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CSS content must be a string"
+          }
+        }
+      }
+    },
+    "/api/history/list": {
+      "get": {
+        "operationId": "getHistory",
+        "summary": "Get download history",
+        "description": "Returns the download history. Requires ENABLE_HISTORY=true in Docker configuration.",
+        "responses": {
+          "200": {
+            "description": "History list (array of Tidal content ID strings)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryList"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "clearHistory",
+        "summary": "Clear download history",
+        "description": "Delete all entries from the download history.",
+        "responses": {
+          "204": {
+            "description": "History cleared"
+          }
+        }
+      }
+    },
+    "/api/lidarr": {
+      "get": {
+        "operationId": "lidarrIndexer",
+        "summary": "Newznab indexer API for Lidarr",
+        "description": "Implements the Newznab protocol for Lidarr integration. Supports capabilities (t=caps), search (t=search), and music search (t=music).",
+        "parameters": [
+          {
+            "name": "t",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "caps",
+                "search",
+                "music"
+              ]
+            },
+            "description": "Request type: caps (capabilities), search (general search), music (artist+album search)"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search query (for t=search)"
+          },
+          {
+            "name": "artist",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Artist name (for t=music)"
+          },
+          {
+            "name": "album",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Album name (for t=music)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Newznab XML response with capabilities or search results",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/lidarr/download/{id}/{quality}": {
+      "get": {
+        "operationId": "lidarrDownload",
+        "summary": "Download album via Lidarr",
+        "description": "Called by Lidarr when grabbing an album. Returns an NZB file that triggers the download. Quality values come from the indexer search results.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Tidal album ID"
+          },
+          {
+            "name": "quality",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "hires_lossless",
+                "lossless",
+                "high",
+                "low"
+              ]
+            },
+            "description": "Download quality as returned by the indexer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "NZB file",
+            "content": {
+              "application/x-nzb": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sabnzbd/api": {
+      "get": {
+        "operationId": "sabnzbdApiGet",
+        "summary": "SABnzbd-compatible download client API (GET)",
+        "description": "SABnzbd-compatible API for Lidarr integration. Supports modes: version, get_config, addurl, queue, history.",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "version",
+                "get_config",
+                "addurl",
+                "addfile",
+                "queue",
+                "history"
+              ]
+            },
+            "description": "SABnzbd API mode"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "URL to add (for mode=addurl) or action name like 'delete' (for mode=queue/history)"
+          },
+          {
+            "name": "value",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "nzo_id to delete (for mode=queue&name=delete or mode=history&name=delete)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Number of history items to return (for mode=history)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response varies by mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SabnzbdVersionResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SabnzbdGetConfigResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SabnzbdAddResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SabnzbdQueueResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SabnzbdHistoryResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "sabnzbdApiPost",
+        "summary": "SABnzbd-compatible download client API (POST)",
+        "description": "Supports all SABnzbd modes via POST. Primarily used by Lidarr to upload NZB files (mode=addfile) with multipart/form-data.",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "version",
+                "get_config",
+                "addurl",
+                "addfile",
+                "queue",
+                "history"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "NZB file"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SabnzbdAddResponse"
+                }
               }
             }
           }
@@ -506,7 +1263,9 @@
             "description": "OIDC configuration incomplete",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/AuthErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorResponse"
+                }
               }
             }
           }
@@ -524,14 +1283,18 @@
             "name": "code",
             "in": "query",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "Authorization code from OIDC provider"
           },
           {
             "name": "state",
             "in": "query",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "State parameter for CSRF protection"
           }
         ],
@@ -548,6 +1311,120 @@
         }
       }
     },
+    "/api/stream/sign/{id}": {
+      "get": {
+        "operationId": "signStreamUrl",
+        "summary": "Generate signed streaming URL",
+        "description": "Generates a time-limited (5 minutes) signed URL for audio streaming of a Tidal track. This endpoint does NOT require authentication.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Tidal track ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Signed URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignedUrlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ID"
+          }
+        }
+      }
+    },
+    "/api/stream/play/{id}": {
+      "get": {
+        "operationId": "playStream",
+        "summary": "Play audio stream",
+        "description": "Streams audio content with signature validation. Supports HTTP range requests for seeking. Use the signed URL from /api/stream/sign/:id. This endpoint does NOT require authentication (uses URL signature instead).",
+        "security": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Tidal track ID"
+          },
+          {
+            "name": "exp",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Expiration timestamp"
+          },
+          {
+            "name": "sig",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "URL signature"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audio stream",
+            "content": {
+              "audio/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No Tidal token available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing signature, expired URL, or invalid signature",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "No playable quality available from Tidal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/save": {
       "post": {
         "operationId": "addToQueue",
@@ -559,7 +1436,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["item"],
+                "required": [
+                  "item"
+                ],
                 "properties": {
                   "item": {
                     "$ref": "#/components/schemas/ProcessingItem"
@@ -667,12 +1546,16 @@
           }
         },
         "responses": {
-          "201": { "description": "Item added to queue" },
+          "201": {
+            "description": "Item added to queue"
+          },
           "400": {
             "description": "Invalid request body or item structure",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -690,12 +1573,18 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["id"],
+                "required": [
+                  "id"
+                ],
                 "properties": {
                   "id": {
                     "oneOf": [
-                      { "type": "string" },
-                      { "type": "number" }
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
                     ],
                     "description": "ID of the item to remove"
                   }
@@ -705,12 +1594,16 @@
           }
         },
         "responses": {
-          "204": { "description": "Item removed" },
+          "204": {
+            "description": "Item removed"
+          },
           "400": {
             "description": "Invalid or missing ID",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -723,7 +1616,9 @@
         "summary": "Clear the entire download queue",
         "description": "Remove all items from the download queue.",
         "responses": {
-          "204": { "description": "Queue cleared" }
+          "204": {
+            "description": "Queue cleared"
+          }
         }
       }
     },
@@ -733,7 +1628,9 @@
         "summary": "Remove finished and errored items from queue",
         "description": "Remove all items with 'finished' or 'error' status from the download queue.",
         "responses": {
-          "204": { "description": "Finished items removed" }
+          "204": {
+            "description": "Finished items removed"
+          }
         }
       }
     },
@@ -743,7 +1640,9 @@
         "summary": "Pause the download queue",
         "description": "Stops processing new items. Cancels the current download and resets it to 'queue_download' status. Cleans up incomplete downloads.",
         "responses": {
-          "204": { "description": "Queue paused" }
+          "204": {
+            "description": "Queue paused"
+          }
         }
       }
     },
@@ -753,7 +1652,9 @@
         "summary": "Resume the download queue",
         "description": "Resume processing items in the download queue.",
         "responses": {
-          "204": { "description": "Queue resumed" }
+          "204": {
+            "description": "Queue resumed"
+          }
         }
       }
     },
@@ -768,12 +1669,18 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["id"],
+                "required": [
+                  "id"
+                ],
                 "properties": {
                   "id": {
                     "oneOf": [
-                      { "type": "string" },
-                      { "type": "number" }
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
                     ],
                     "description": "ID of the item to download"
                   }
@@ -783,20 +1690,26 @@
           }
         },
         "responses": {
-          "204": { "description": "Download triggered" },
+          "204": {
+            "description": "Download triggered"
+          },
           "400": {
             "description": "Invalid or missing ID",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
           "500": {
-            "description": "Item not found or not in no_download status",
+            "description": "Item not found or not in valid status",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -813,79 +1726,72 @@
             "description": "Queue status",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/QueueStatusResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/QueueStatusResponse"
+                }
               }
             }
           }
         }
       }
     },
-    "/api/settings": {
+    "/api/stream-processing": {
       "get": {
-        "operationId": "getSettings",
-        "summary": "Get Tidarr configuration",
-        "description": "Returns the full Tidarr configuration including Tidal token status, download quality, integration settings, and tiddl config.",
+        "operationId": "streamProcessing",
+        "summary": "Stream processing queue updates (SSE)",
+        "description": "Server-Sent Events endpoint that streams real-time updates of the processing queue. Sends the full queue state on connection and pushes updates as items change status.",
         "responses": {
           "200": {
-            "description": "Settings",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/SettingsResponse" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/run-token": {
-      "get": {
-        "operationId": "runTidalToken",
-        "summary": "Run Tidal authentication flow",
-        "description": "Server-Sent Events endpoint that runs the Tidal OAuth flow. Streams progress updates.",
-        "responses": {
-          "200": {
-            "description": "SSE stream with Tidal authentication progress",
+            "description": "SSE stream of processing queue data",
             "content": {
               "text/event-stream": {
-                "schema": { "type": "string" }
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProcessingItemResponse"
+                  }
+                }
               }
             }
           }
         }
       }
     },
-    "/api/token": {
-      "delete": {
-        "operationId": "deleteTidalToken",
-        "summary": "Delete Tidal authentication token",
-        "description": "Removes the Tidal authentication token from the tiddl configuration.",
-        "responses": {
-          "204": { "description": "Token deleted" }
-        }
-      }
-    },
-    "/api/history/list": {
+    "/api/stream-item-output/{id}": {
       "get": {
-        "operationId": "getHistory",
-        "summary": "Get download history",
-        "description": "Returns the download history. Requires ENABLE_HISTORY=true in Docker configuration.",
+        "operationId": "streamItemOutput",
+        "summary": "Stream individual item output logs (SSE)",
+        "description": "Server-Sent Events endpoint that streams real-time output/logs for a specific processing item.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Processing item ID"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "History list (array of Tidal content ID strings)",
+            "description": "SSE stream of item output",
             "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HistoryList" }
+              "text/event-stream": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "output": {
+                      "type": "string"
+                    }
+                  }
+                }
               }
             }
           }
-        }
-      },
-      "delete": {
-        "operationId": "clearHistory",
-        "summary": "Clear download history",
-        "description": "Delete all entries from the download history.",
-        "responses": {
-          "204": { "description": "History cleared" }
         }
       }
     },
@@ -901,7 +1807,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/SyncItem" }
+                  "items": {
+                    "$ref": "#/components/schemas/SyncItem"
+                  }
                 }
               }
             }
@@ -920,7 +1828,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["item"],
+                "required": [
+                  "item"
+                ],
                 "properties": {
                   "item": {
                     "$ref": "#/components/schemas/SyncItem"
@@ -945,12 +1855,16 @@
           }
         },
         "responses": {
-          "201": { "description": "Item added to sync list" },
+          "201": {
+            "description": "Item added to sync list"
+          },
           "400": {
             "description": "Invalid request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -968,12 +1882,18 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["id"],
+                "required": [
+                  "id"
+                ],
                 "properties": {
                   "id": {
                     "oneOf": [
-                      { "type": "string" },
-                      { "type": "number" }
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
                     ],
                     "description": "ID of the sync item to remove"
                   }
@@ -983,12 +1903,16 @@
           }
         },
         "responses": {
-          "204": { "description": "Item removed from sync list" },
+          "204": {
+            "description": "Item removed from sync list"
+          },
           "400": {
             "description": "Invalid or missing ID",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -1001,7 +1925,9 @@
         "summary": "Remove all items from sync list",
         "description": "Clear the entire synchronization list.",
         "responses": {
-          "204": { "description": "Sync list cleared" }
+          "204": {
+            "description": "Sync list cleared"
+          }
         }
       }
     },
@@ -1011,58 +1937,8 @@
         "summary": "Trigger sync now",
         "description": "Manually trigger synchronization of all items in the sync list. Each item is re-queued for download.",
         "responses": {
-          "202": { "description": "Sync triggered" }
-        }
-      }
-    },
-    "/api/custom-css": {
-      "get": {
-        "operationId": "getCustomCss",
-        "summary": "Get custom CSS",
-        "description": "Returns the custom CSS content used to style the Tidarr web UI.",
-        "responses": {
-          "200": {
-            "description": "Custom CSS content",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/CustomCSSResponse" }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "saveCustomCss",
-        "summary": "Save custom CSS",
-        "description": "Save custom CSS content to style the Tidarr web UI.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["css"],
-                "properties": {
-                  "css": {
-                    "type": "string",
-                    "description": "CSS content"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "CSS saved",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/SaveSuccessResponse" }
-              }
-            }
-          },
-          "400": {
-            "description": "CSS content must be a string"
+          "202": {
+            "description": "Sync triggered"
           }
         }
       }
@@ -1077,7 +1953,9 @@
             "description": "Tiddl config",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/TiddlTomlResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/TiddlTomlResponse"
+                }
               }
             }
           }
@@ -1093,7 +1971,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["toml"],
+                "required": [
+                  "toml"
+                ],
                 "properties": {
                   "toml": {
                     "type": "string",
@@ -1109,7 +1989,9 @@
             "description": "Config saved",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/SaveSuccessResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/SaveSuccessResponse"
+                }
               }
             }
           },
@@ -1118,367 +2000,7 @@
           }
         }
       }
-    },
-    "/api/api-key": {
-      "get": {
-        "operationId": "getApiKey",
-        "summary": "Get current API key",
-        "description": "Returns the current API key used for *arr integrations. Requires JWT authentication.",
-        "responses": {
-          "200": {
-            "description": "API key",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ApiKeyResponse" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/api-key/regenerate": {
-      "post": {
-        "operationId": "regenerateApiKey",
-        "summary": "Regenerate API key",
-        "description": "Generate a new random 64-character API key. Warning: this invalidates the current key.",
-        "responses": {
-          "200": {
-            "description": "New API key",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ApiKeyResponse" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/stream/sign/{id}": {
-      "get": {
-        "operationId": "signStreamUrl",
-        "summary": "Generate signed streaming URL",
-        "description": "Generates a time-limited (5 minutes) signed URL for audio streaming of a Tidal track. This endpoint does NOT require authentication.",
-        "security": [],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "Tidal track ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Signed URL",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/SignedUrlResponse" }
-              }
-            }
-          },
-          "400": {
-            "description": "Missing ID"
-          }
-        }
-      }
-    },
-    "/api/stream/play/{id}": {
-      "get": {
-        "operationId": "playStream",
-        "summary": "Play audio stream",
-        "description": "Streams audio content with signature validation. Supports HTTP range requests for seeking. Use the signed URL from /api/stream/sign/:id. This endpoint does NOT require authentication (uses URL signature instead).",
-        "security": [],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "Tidal track ID"
-          },
-          {
-            "name": "exp",
-            "in": "query",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "Expiration timestamp"
-          },
-          {
-            "name": "sig",
-            "in": "query",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "URL signature"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Audio stream",
-            "content": {
-              "audio/*": {
-                "schema": { "type": "string", "format": "binary" }
-              }
-            }
-          },
-          "400": {
-            "description": "No Tidal token available",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-              }
-            }
-          },
-          "403": {
-            "description": "Missing signature, expired URL, or invalid signature",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-              }
-            }
-          },
-          "502": {
-            "description": "No playable quality available from Tidal",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/stream-processing": {
-      "get": {
-        "operationId": "streamProcessing",
-        "summary": "Stream processing queue updates (SSE)",
-        "description": "Server-Sent Events endpoint that streams real-time updates of the processing queue. Sends the full queue state on connection and pushes updates as items change status.",
-        "responses": {
-          "200": {
-            "description": "SSE stream of processing queue data",
-            "content": {
-              "text/event-stream": {
-                "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/ProcessingItemResponse" }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/stream-item-output/{id}": {
-      "get": {
-        "operationId": "streamItemOutput",
-        "summary": "Stream individual item output logs (SSE)",
-        "description": "Server-Sent Events endpoint that streams real-time output/logs for a specific processing item.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "Processing item ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "SSE stream of item output",
-            "content": {
-              "text/event-stream": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": { "type": "string" },
-                    "output": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/lidarr": {
-      "get": {
-        "operationId": "lidarrIndexer",
-        "summary": "Newznab indexer API for Lidarr",
-        "description": "Implements the Newznab protocol for Lidarr integration. Supports capabilities (t=caps), search (t=search), and music search (t=music).",
-        "parameters": [
-          {
-            "name": "t",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": ["caps", "search", "music"]
-            },
-            "description": "Request type: caps (capabilities), search (general search), music (artist+album search)"
-          },
-          {
-            "name": "q",
-            "in": "query",
-            "schema": { "type": "string" },
-            "description": "Search query (for t=search)"
-          },
-          {
-            "name": "artist",
-            "in": "query",
-            "schema": { "type": "string" },
-            "description": "Artist name (for t=music)"
-          },
-          {
-            "name": "album",
-            "in": "query",
-            "schema": { "type": "string" },
-            "description": "Album name (for t=music)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Newznab XML response with capabilities or search results",
-            "content": {
-              "application/xml": {
-                "schema": { "type": "string" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/lidarr/download/{id}/{quality}": {
-      "get": {
-        "operationId": "lidarrDownload",
-        "summary": "Download album via Lidarr",
-        "description": "Called by Lidarr when grabbing an album. Returns an NZB file that triggers the download. Quality values come from the indexer search results.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "Tidal album ID"
-          },
-          {
-            "name": "quality",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": ["hires_lossless", "lossless", "high", "low"]
-            },
-            "description": "Download quality as returned by the indexer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "NZB file",
-            "content": {
-              "application/x-nzb": {
-                "schema": { "type": "string", "format": "binary" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/sabnzbd/api": {
-      "get": {
-        "operationId": "sabnzbdApiGet",
-        "summary": "SABnzbd-compatible download client API (GET)",
-        "description": "SABnzbd-compatible API for Lidarr integration. Supports modes: version, get_config, addurl, queue, history.",
-        "parameters": [
-          {
-            "name": "mode",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": ["version", "get_config", "addurl", "addfile", "queue", "history"]
-            },
-            "description": "SABnzbd API mode"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "schema": { "type": "string" },
-            "description": "URL to add (for mode=addurl) or action name like 'delete' (for mode=queue/history)"
-          },
-          {
-            "name": "value",
-            "in": "query",
-            "schema": { "type": "string" },
-            "description": "nzo_id to delete (for mode=queue&name=delete or mode=history&name=delete)"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": { "type": "integer" },
-            "description": "Number of history items to return (for mode=history)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Response varies by mode",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    { "$ref": "#/components/schemas/SabnzbdVersionResponse" },
-                    { "$ref": "#/components/schemas/SabnzbdGetConfigResponse" },
-                    { "$ref": "#/components/schemas/SabnzbdAddResponse" },
-                    { "$ref": "#/components/schemas/SabnzbdQueueResponse" },
-                    { "$ref": "#/components/schemas/SabnzbdHistoryResponse" }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "sabnzbdApiPost",
-        "summary": "SABnzbd-compatible download client API (POST)",
-        "description": "Supports all SABnzbd modes via POST. Primarily used by Lidarr to upload NZB files (mode=addfile) with multipart/form-data.",
-        "parameters": [
-          {
-            "name": "mode",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "enum": ["version", "get_config", "addurl", "addfile", "queue", "history"]
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "NZB file"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "File added",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/SabnzbdAddResponse" }
-              }
-            }
-          }
-        }
-      }
     }
-  }
+  },
+  "tags": []
 }

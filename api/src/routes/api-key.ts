@@ -7,8 +7,19 @@ import { getOrCreateApiKey, regenerateApiKey } from "../services/api-key";
 const router = Router();
 
 /**
- * GET /api/api-key
- * Get the current API key for *arr integrations (Lidarr, Radarr, etc.)
+ * @openapi
+ * /api/api-key:
+ *   get:
+ *     operationId: getApiKey
+ *     summary: Get current API key
+ *     description: Returns the current API key used for *arr integrations. Requires JWT authentication.
+ *     responses:
+ *       200:
+ *         description: API key
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiKeyResponse'
  */
 router.get(
   "/api-key",
@@ -27,8 +38,19 @@ router.get(
 );
 
 /**
- * POST /api/api-key/regenerate
- * Regenerate the API key (creates a new random key)
+ * @openapi
+ * /api/api-key/regenerate:
+ *   post:
+ *     operationId: regenerateApiKey
+ *     summary: Regenerate API key
+ *     description: Generate a new random 64-character API key. Warning - this invalidates the current key.
+ *     responses:
+ *       200:
+ *         description: New API key
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiKeyResponse'
  */
 router.post(
   "/api-key/regenerate",

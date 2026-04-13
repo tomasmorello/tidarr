@@ -9,7 +9,31 @@ import { getPlaybackInfo } from "../services/playback";
 const streamPipeline = promisify(pipeline);
 const router = Router();
 
-// Endpoint firm URL
+/**
+ * @openapi
+ * /api/stream/sign/{id}:
+ *   get:
+ *     operationId: signStreamUrl
+ *     summary: Generate signed streaming URL
+ *     description: Generates a time-limited (5 minutes) signed URL for audio streaming of a Tidal track. This endpoint does NOT require authentication.
+ *     security: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Tidal track ID
+ *     responses:
+ *       200:
+ *         description: Signed URL
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SignedUrlResponse'
+ *       400:
+ *         description: Missing ID
+ */
 router.get("/stream/sign/:id", (req, res) => {
   const { id } = req.params;
   if (!id) return res.status(400).json({ error: "Missing id" });
@@ -22,7 +46,60 @@ router.get("/stream/sign/:id", (req, res) => {
   res.json({ url });
 });
 
-// Endpoint play
+/**
+ * @openapi
+ * /api/stream/play/{id}:
+ *   get:
+ *     operationId: playStream
+ *     summary: Play audio stream
+ *     description: Streams audio content with signature validation. Supports HTTP range requests for seeking. Use the signed URL from /api/stream/sign/:id. This endpoint does NOT require authentication (uses URL signature instead).
+ *     security: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Tidal track ID
+ *       - name: exp
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Expiration timestamp
+ *       - name: sig
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: URL signature
+ *     responses:
+ *       200:
+ *         description: Audio stream
+ *         content:
+ *           audio/*:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: No Tidal token available
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: "Missing signature, expired URL, or invalid signature"
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       502:
+ *         description: No playable quality available from Tidal
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.get("/stream/play/:id", async (req, res) => {
   const { id } = req.params;
   const { exp, sig } = req.query as { exp?: string; sig?: string };

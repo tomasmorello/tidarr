@@ -6,8 +6,21 @@ import { sanitizeProcessingData } from "../processing/core/processing-manager";
 const router = Router();
 
 /**
- * GET /api/stream-processing
- * Server-Sent Events endpoint for processing queue updates
+ * @openapi
+ * /api/stream-processing:
+ *   get:
+ *     operationId: streamProcessing
+ *     summary: Stream processing queue updates (SSE)
+ *     description: Server-Sent Events endpoint that streams real-time updates of the processing queue. Sends the full queue state on connection and pushes updates as items change status.
+ *     responses:
+ *       200:
+ *         description: SSE stream of processing queue data
+ *         content:
+ *           text/event-stream:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ProcessingItemResponse'
  */
 router.get(
   "/stream-processing",
@@ -38,8 +51,31 @@ router.get(
 );
 
 /**
- * GET /api/stream-item-output/:id
- * Server-Sent Events endpoint for individual item output logs
+ * @openapi
+ * /api/stream-item-output/{id}:
+ *   get:
+ *     operationId: streamItemOutput
+ *     summary: Stream individual item output logs (SSE)
+ *     description: Server-Sent Events endpoint that streams real-time output/logs for a specific processing item.
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Processing item ID
+ *     responses:
+ *       200:
+ *         description: SSE stream of item output
+ *         content:
+ *           text/event-stream:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 output:
+ *                   type: string
  */
 router.get(
   "/stream-item-output/:id",

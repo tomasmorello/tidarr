@@ -9,8 +9,19 @@ import { SettingsResponse } from "../types";
 const router = Router();
 
 /**
- * GET /api/settings
- * Get Tidarr configuration and Tidal token status
+ * @openapi
+ * /api/settings:
+ *   get:
+ *     operationId: getSettings
+ *     summary: Get Tidarr configuration
+ *     description: Returns the full Tidarr configuration including Tidal token status, download quality, integration settings, and tiddl config.
+ *     responses:
+ *       200:
+ *         description: Settings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SettingsResponse'
  */
 router.get(
   "/settings",
@@ -38,8 +49,19 @@ router.get(
 );
 
 /**
- * GET /api/run-token
- * Run Tidal authentication flow (SSE endpoint)
+ * @openapi
+ * /api/run-token:
+ *   get:
+ *     operationId: runTidalToken
+ *     summary: Run Tidal authentication flow
+ *     description: Server-Sent Events endpoint that runs the Tidal OAuth flow. Streams progress updates.
+ *     responses:
+ *       200:
+ *         description: SSE stream with Tidal authentication progress
+ *         content:
+ *           text/event-stream:
+ *             schema:
+ *               type: string
  */
 router.get(
   "/run-token",
@@ -58,8 +80,15 @@ router.get(
 );
 
 /**
- * DELETE /api/token
- * Delete Tidal authentication token
+ * @openapi
+ * /api/token:
+ *   delete:
+ *     operationId: deleteTidalToken
+ *     summary: Delete Tidal authentication token
+ *     description: Removes the Tidal authentication token from the tiddl configuration.
+ *     responses:
+ *       204:
+ *         description: Token deleted
  */
 router.delete(
   "/token",

@@ -8,8 +8,26 @@ import { flushHistory } from "../services/history";
 const router = Router();
 
 /**
- * GET /api/history/list
- * Get the download history
+ * @openapi
+ * /api/history/list:
+ *   get:
+ *     operationId: getHistory
+ *     summary: Get download history
+ *     description: Returns the download history. Requires ENABLE_HISTORY=true in Docker configuration.
+ *     responses:
+ *       200:
+ *         description: History list (array of Tidal content ID strings)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HistoryList'
+ *   delete:
+ *     operationId: clearHistory
+ *     summary: Clear download history
+ *     description: Delete all entries from the download history.
+ *     responses:
+ *       204:
+ *         description: History cleared
  */
 router.get(
   "/history/list",
@@ -24,10 +42,6 @@ router.get(
   },
 );
 
-/**
- * DELETE /api/remove-all
- * Clear the entire download queue
- */
 router.delete(
   "/history/list",
   ensureAccessIsGranted,

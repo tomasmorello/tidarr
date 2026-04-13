@@ -24,8 +24,22 @@ setInterval(
 );
 
 /**
- * GET /api/auth/oidc/login
- * Redirect to OIDC provider for authentication
+ * @openapi
+ * /api/auth/oidc/login:
+ *   get:
+ *     operationId: oidcLogin
+ *     summary: Initiate OIDC login
+ *     description: Redirects to the configured OIDC provider for authentication. Requires OIDC_ISSUER, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, and OIDC_REDIRECT_URI environment variables.
+ *     security: []
+ *     responses:
+ *       302:
+ *         description: Redirect to OIDC provider
+ *       500:
+ *         description: OIDC configuration incomplete
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthErrorResponse'
  */
 router.get("/auth/oidc/login", async (_req: Request, res: Response) => {
   try {
@@ -83,8 +97,33 @@ router.get("/auth/oidc/login", async (_req: Request, res: Response) => {
 });
 
 /**
- * GET /api/auth/oidc/callback
- * Handle OIDC callback and issue JWT token
+ * @openapi
+ * /api/auth/oidc/callback:
+ *   get:
+ *     operationId: oidcCallback
+ *     summary: OIDC callback handler
+ *     description: Handles the OIDC callback, exchanges the authorization code for tokens, and redirects to the frontend with a JWT token.
+ *     security: []
+ *     parameters:
+ *       - name: code
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Authorization code from OIDC provider
+ *       - name: state
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: State parameter for CSRF protection
+ *     responses:
+ *       302:
+ *         description: Redirect to frontend with JWT token
+ *       400:
+ *         description: Missing code or state parameter
+ *       403:
+ *         description: Invalid state parameter
  */
 router.get("/auth/oidc/callback", async (req: Request, res: Response) => {
   try {
