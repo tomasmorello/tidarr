@@ -50,6 +50,9 @@ export async function configureServer() {
       ENABLE_HISTORY: process.env.ENABLE_HISTORY || "",
       M3U_BASEPATH_FILE: process.env.M3U_BASEPATH_FILE || "",
       PLAYLIST_ALBUMS: process.env.PLAYLIST_ALBUMS || "",
+      ARTIST_SINGLE_DOWNLOAD: process.env.ARTIST_SINGLE_DOWNLOAD || "",
+      DOWNLOAD_BATCH_SIZE: process.env.DOWNLOAD_BATCH_SIZE || "",
+      DOWNLOAD_BATCH_CRON: process.env.DOWNLOAD_BATCH_CRON || "",
     },
   };
 }

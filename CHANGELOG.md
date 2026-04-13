@@ -3,6 +3,23 @@ Tidarr notable changes.
 
 [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) format.
 
+## 📦 1.2.1
+### 🚀 Added
+- [API] Add new `ARTIST_SINGLE_DOWNLOAD` env var to bulk download discographies #713
+- [Front] When queue is paused, you can single-download a specific item in the queue.
+- [API] Add batch download limit to pause your download after x completed items #722
+- [Devops] Allow custom listening port #734
+### 🐛 Fixed
+- [API] Fix favorite tracks download for large libraries by using native tiddl command instead of temporary playlist (was limited to 500 tracks) #721
+- [Front] Fix sorted playlists pager #730 
+### 🖍 Changes
+- [API] Tidal playlist fetches now renew token if needed
+- [Lidarr] Apply PUID and PGID to Lidarr downloaded files
+- [Front] Add single download button in no-download mode #684
+- [Front] Add toggle finished items button in queue list
+- [Docker] Load custom `/config/requirements.txt` file to extend your scripts
+- [API] Update Tiddl to 3.2.3
+
 ## 📦 1.2.0
 ### 🐛 Fixed
 - [API] Fix playlist albums download (#654)
@@ -20,7 +37,7 @@ Tidarr notable changes.
 - [API] Download retries occured only on connection error (#664)
 - [API] Discography download now use per-album processing (#687)
 - [Lidarr] Fixed path templating for Lidarr downloads
-- [Tiddl] Update Tiddl to 3.2.1
+- [Tiddl] Update Tiddl to 3.2.2
 
 ## 📦 1.1.9
 ### 🚀 Added

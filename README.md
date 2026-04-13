@@ -22,10 +22,13 @@ Tidarr is a Docker image that provides a web interface to download up to **24-bi
 - [Options](#options)
   - [Download settings](#download-settings)
   - [PUID/PGID/UMASK](#puid-pgid-umask)
+  - [Listening port](#listening-port)
   - [Password protection](#password-protection)
   - [OpenID Connect (OIDC) Authentication](#openid-connect-oidc-authentication)
   - [Lock quality selector](#lock-quality-selector)
   - [Playlist options](#playlist-options)
+  - [Discography options](#discography-download-mode)
+  - [Rate-limited download mode](#rate-limited-download-mode)
   - [Sync playlists and mixes](#sync-playlists-and-mixes)
   - [Custom CSS](#custom-css)
   - [Download History](#download-history)
@@ -190,6 +193,15 @@ environment:
   - UMASK=0022
 ```
 
+### Listening port
+Default listening port is 8484 but you can override it using :
+
+```yaml
+environment:
+  - ...
+  - PORT=9999
+```
+
 ### Password protection
 
 If not set, no password is required to access the app.
@@ -261,6 +273,38 @@ environment:
 > [!NOTE]
 > This feature processes playlists and mixes after the playlist download completes. Albums are added to the queue automatically, eliminating the need to manually download each album. Duplicates are avoided by tracking unique album IDs + Tiddl "skip existing" feature.
 
+### Discography download mode
+
+By default, Tidarr expands an artist download into individual album queue items (one item per album). This allows better control, error isolation, and retry per album.
+
+To download an entire discography as a single tiddl job instead:
+
+```yaml
+environment:
+  - ...
+  - ARTIST_SINGLE_DOWNLOAD=true
+```
+
+> [!NOTE]
+> When `ARTIST_SINGLE_DOWNLOAD=true`, the artist is passed directly to tiddl as a single download job. This is faster but provides less granular error handling — if one album fails, the entire job may be affected.
+
+### Rate-limited download mode
+
+Throttle downloads to avoid being rate-limited by Tidal: automatically pause the queue after N items have been downloaded, and optionally resume it on a cron schedule.
+
+```yaml
+environment:
+  - ...
+  - DOWNLOAD_BATCH_SIZE=10          # Pause queue after 10 completed items
+  - DOWNLOAD_BATCH_CRON="0 * * * *" # Resume queue every hour
+```
+
+> [!NOTE]
+> `DOWNLOAD_BATCH_SIZE` and `DOWNLOAD_BATCH_CRON` can be used independently:
+> - `DOWNLOAD_BATCH_SIZE` alone: queue auto-pauses after N items, resume manually via the UI
+> - `DOWNLOAD_BATCH_CRON` alone: queue resumes on schedule if paused (e.g. manually paused)
+> - Both together: fully automated rate-limited downloading (e.g. 10 albums per hour)
+
 ### Sync playlists and mixes
 
 Default value is daily sync at **3 am** (`0 3 * * *`).
@@ -331,6 +375,11 @@ environment:
 ```
 
 Beets options in `</mounted/config/folder/>beets-config.yml`:
+
+> [!NOTE]
+> Beets is locked to version **2.5.1**
+>
+> Starting from 2.6.0, beets added `numba` as an unconditional dependency, which requires `llvmlite` to compile from source. `llvmlite` has no pre-built wheels for Alpine Linux (musl libc), making installation fail on both `amd64` and `arm64`. Upgrading beets requires switching the base image to a glibc-based distribution (e.g. Debian).
 
 ### Plex integration
 
@@ -507,6 +556,8 @@ Tidarr supports two custom shell scripts during the post-processing pipeline:
 - **`custom-script.sh`** - Runs **before** files are moved to the library
 - **`custom-post-script.sh`** - Runs **after** files are moved to the library
 
+You can also install additional Python packages by placing a **`requirements.txt`** file in your root config folder.
+
 > [!NOTE]
 > **Interact with Tidarr download process**
 >
@@ -521,6 +572,9 @@ Tidarr supports two custom shell scripts during the post-processing pipeline:
 If you want to use Tidarr only as UI and not download files, you can set `NO_DOWNLOAD=true` in the environment variables.
 
 This way you can use Tidarr to manage your download history, watchlist, and keep benefits of json DB (`sync_list.json`, `queue.json`) to manage download via custom scripts.
+
+Queue items are set to `no_download` status and never processed automatically. You can still trigger a one-off download for any individual item directly from the queue UI using the single download button.
+
 
 > [!NOTE]
 > **Unecessary configurations**

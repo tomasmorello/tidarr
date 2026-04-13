@@ -13,12 +13,10 @@ ENV SHELL=bash \
     PYTHONUNBUFFERED=1 \
     HOME=/shared
 
-# Install system dependencies (shared by dev and prod)
 RUN apk update && apk upgrade && \
     apk add --no-cache \
         npm nodejs \
         ffmpeg \
-        beets \
         bash \
         su-exec \
         curl \
@@ -27,7 +25,6 @@ RUN apk update && apk upgrade && \
     rm -rf /var/cache/apk/*
 
 # Install Python and Node dependencies
-# Add build tools temporarily for native modules, then remove them
 COPY docker/requirements.txt docker/requirements.txt
 RUN apk add --no-cache --virtual .build-deps \
         python3-dev \
@@ -51,7 +48,6 @@ ENV NODE_ENV="${NODE_ENV}" \
     ENVIRONMENT="development" \
     VERSION="0.0.0-dev"
 
-# Install dev-only dependencies
 RUN apk add --no-cache git && \
     npm install -g tsx
 
@@ -61,7 +57,7 @@ RUN apk add --no-cache git && \
 EXPOSE 8484 3000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:8484/api/is-auth-active || exit 1
+  CMD curl -f http://localhost:${PORT:-8484}/api/is-auth-active || exit 1
 
 ENTRYPOINT ["sh", "/tidarr/docker/entrypoint.sh"]
 
@@ -118,7 +114,7 @@ RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=locked \
         python3-dev \
         build-base && \
     mkdir -p /shared/.processing && \
-    yarn install --frozen-lockfile --production && \
+    yarn install --frozen-lockfile --production --ignore-optional && \
     apk del .build-deps && \
     npm uninstall -g npm && \
     rm -rf /root/.npm /tmp/* /var/tmp/* && \
@@ -128,6 +124,6 @@ RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,sharing=locked \
 EXPOSE 8484
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8484/api/is-auth-active || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-8484}/api/is-auth-active || exit 1
 
 ENTRYPOINT ["sh", "/tidarr/docker/entrypoint.sh"]

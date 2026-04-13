@@ -1,15 +1,17 @@
 import { ReactElement } from "react";
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
-import { Block, CoffeeMaker, MoreHoriz } from "@mui/icons-material";
+import { CoffeeMaker, MoreHoriz } from "@mui/icons-material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
+import DownloadIcon from "@mui/icons-material/Download";
 import WarningIcon from "@mui/icons-material/Warning";
 import {
   Box,
   Button,
   CircularProgress,
+  IconButton,
   TableCell,
   TableRow,
   Tooltip,
@@ -27,12 +29,11 @@ const STATUS_ICONS: Record<string, ReactElement> = {
   queue_download: <AccessTimeIcon />,
   queue_processing: <MoreHoriz />,
   processing: <CoffeeMaker />,
-  no_download: <Block color="disabled" />,
 };
 
 export const ProcessingItem = ({ item }: { item: ProcessingItemType }) => {
   const status = item?.status;
-  const { actions } = useProcessingProvider();
+  const { actions, isPaused } = useProcessingProvider();
 
   if (!item?.status) return null;
 
@@ -74,9 +75,22 @@ export const ProcessingItem = ({ item }: { item: ProcessingItemType }) => {
               </Button>
             </>
           )}
+          {isPaused && status === "queue_download" && (
+            <>
+              &nbsp;&nbsp;
+              <Tooltip title="Download now">
+                <IconButton
+                  size="small"
+                  data-testid="btn-single-download"
+                  onClick={() => actions.downloadNow(item.id)}
+                >
+                  <DownloadIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
           &nbsp;&nbsp;
-          {item.status !== "queue_download" &&
-            item.status !== "no_download" && <DialogTerminal item={item} />}
+          {item.status !== "queue_download" && <DialogTerminal item={item} />}
         </Box>
       </TableCell>
       <TableCell scope="row">
