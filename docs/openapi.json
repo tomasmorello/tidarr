@@ -89,8 +89,8 @@
           },
           "status": {
             "type": "string",
-            "enum": ["queue_download", "download", "queue_processing", "processing", "queue", "finished", "error", "no_download"],
-            "description": "Item status. Use 'queue_download' when adding new items"
+            "enum": ["queue_download", "download", "queue_processing", "processing", "queue", "finished", "error"],
+            "description": "Item status. Use 'queue_download' when adding new items. 'queue' is legacy"
           },
           "loading": {
             "type": "boolean",
@@ -229,7 +229,10 @@
               "NO_DOWNLOAD": { "type": "string" },
               "ENABLE_HISTORY": { "type": "string" },
               "M3U_BASEPATH_FILE": { "type": "string" },
-              "PLAYLIST_ALBUMS": { "type": "string" }
+              "PLAYLIST_ALBUMS": { "type": "string" },
+              "ARTIST_SINGLE_DOWNLOAD": { "type": "string" },
+              "DOWNLOAD_BATCH_SIZE": { "type": "string" },
+              "DOWNLOAD_BATCH_CRON": { "type": "string" }
             }
           },
           "noToken": { "type": "boolean", "description": "True if no Tidal token is configured" },
@@ -751,6 +754,52 @@
         "description": "Resume processing items in the download queue.",
         "responses": {
           "204": { "description": "Queue resumed" }
+        }
+      }
+    },
+    "/api/single-download": {
+      "post": {
+        "operationId": "singleDownload",
+        "summary": "Trigger a single download in NO_DOWNLOAD mode",
+        "description": "Trigger a one-off download for a specific item. Works for items in 'queue_download', 'error', or 'finished' status. The item goes through the full download pipeline (beets, move to library, notifications) and ends up as 'finished'. Useful in NO_DOWNLOAD mode to selectively download individual items.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id"],
+                "properties": {
+                  "id": {
+                    "oneOf": [
+                      { "type": "string" },
+                      { "type": "number" }
+                    ],
+                    "description": "ID of the item to download"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Download triggered" },
+          "400": {
+            "description": "Invalid or missing ID",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Item not found or not in no_download status",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
         }
       }
     },
